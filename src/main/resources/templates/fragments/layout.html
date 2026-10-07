@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" th:fragment="page(content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${pageTitle} + ' | İK Portal'">İK Portal</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="shell">
+
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="mark">İK</div>
+            <div class="name">İK Portal</div>
+        </div>
+
+        <div class="nav-label">Menü</div>
+        <nav>
+            <a th:href="@{/}" th:classappend="${activeMenu == 'dashboard'} ? 'active'">
+                <span class="ico">▣</span><span>Özet</span>
+            </a>
+            <a th:href="@{/profile}" th:classappend="${activeMenu == 'profile'} ? 'active'">
+                <span class="ico">▤</span><span>Bilgilerim</span>
+            </a>
+            <a th:href="@{/leaves}" th:classappend="${activeMenu == 'leaves'} ? 'active'">
+                <span class="ico">▦</span><span>İzinlerim</span>
+            </a>
+        </nav>
+
+        <div class="spacer"></div>
+
+        <div class="side-user" th:if="${currentUser != null}">
+            <div class="who" th:text="${currentUser.name}">Kullanıcı</div>
+            <div class="mail" th:text="${currentUser.email}">mail</div>
+            <a th:href="@{/logout}">Çıkış yap</a>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+        <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <div th:replace="${content}">sayfa içeriği</div>
+    </main>
+
+</div>
+</body>
+</html>

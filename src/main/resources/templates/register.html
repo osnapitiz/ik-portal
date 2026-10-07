@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kayıt Ol | İK Portal</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="auth-wrap">
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            <div class="mark">İK</div>
+            <div class="name">İK Portal</div>
+        </div>
+
+        <h1>Hesap oluştur</h1>
+        <p class="sub">E-posta ve şifrenizi belirleyin; bilgilerinizi girişten sonra dolduracaksınız.</p>
+
+        <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <form method="post" th:action="@{/register}">
+            <div class="field" style="margin-bottom:14px">
+                <label for="displayName">Ad Soyad</label>
+                <input type="text" id="displayName" name="displayName" th:value="${displayName}"
+                       placeholder="Adınız Soyadınız" autofocus>
+            </div>
+
+            <div class="field" style="margin-bottom:14px">
+                <label for="email">E-posta <span class="req">*</span></label>
+                <input type="email" id="email" name="email" th:value="${email}"
+                       placeholder="ornek@sirket.com" required autocomplete="username">
+            </div>
+
+            <div class="field" style="margin-bottom:14px">
+                <label for="password">Şifre <span class="req">*</span></label>
+                <input type="password" id="password" name="password" minlength="6"
+                       placeholder="En az 6 karakter" required autocomplete="new-password">
+            </div>
+
+            <div class="field" style="margin-bottom:20px">
+                <label for="passwordConfirm">Şifre (tekrar) <span class="req">*</span></label>
+                <input type="password" id="passwordConfirm" name="passwordConfirm" minlength="6"
+                       placeholder="Şifrenizi tekrar girin" required autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="btn block">Kayıt Ol</button>
+        </form>
+
+        <div class="auth-foot">
+            Zaten hesabınız var mı? <a th:href="@{/login}">Giriş yapın</a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Giriş Yap | İK Portal</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="auth-wrap">
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            <div class="mark">İK</div>
+            <div class="name">İK Portal</div>
+        </div>
+
+        <h1>Giriş yap</h1>
+        <p class="sub">Özlük bilgilerinize ve izin taleplerinize erişmek için giriş yapın.</p>
+
+        <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+        <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+        <form method="post" th:action="@{/login}">
+            <div class="field" style="margin-bottom:14px">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" name="email" th:value="${email}"
+                       placeholder="ornek@sirket.com" required autofocus autocomplete="username">
+            </div>
+
+            <div class="field" style="margin-bottom:20px">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password"
+                       placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn block">Giriş Yap</button>
+        </form>
+
+        <div class="auth-foot">
+            Hesabınız yok mu? <a th:href="@{/register}">Kayıt olun</a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

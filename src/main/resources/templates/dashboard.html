@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page(~{::content})}">
+<body>
+<th:block th:fragment="content">
+
+    <div class="page-head">
+        <div>
+            <h1 th:text="'Merhaba, ' + ${currentUser.name}">Merhaba</h1>
+            <div class="desc">İzin durumunuzun ve özlük bilgilerinizin özeti.</div>
+        </div>
+    </div>
+
+    <div class="alert alert-warn" th:unless="${profileComplete}">
+        Henüz özlük bilgilerinizi girmediniz. İzin hakkınızın hesaplanabilmesi için
+        <a th:href="@{/profile}">Bilgilerim</a> sayfasını doldurun.
+    </div>
+
+    <div class="stat-grid">
+        <div class="stat">
+            <div class="label">Kalan Yıllık İzin</div>
+            <div class="value">
+                <span th:text="${balance.remainingDays}">0</span><small th:text="' / ' + ${balance.entitledDays} + ' gün'"> gün</small>
+            </div>
+            <div class="foot" th:if="${balance.entitled}"
+                 th:text="${balance.usedDays} + ' gün kullanıldı, ' + ${balance.pendingDays} + ' gün onay bekliyor'">
+            </div>
+            <div class="foot" th:unless="${balance.entitled}">
+                Yıllık izne hak kazanmak için 1 yıl kıdem gerekir.
+            </div>
+            <div class="bar"><span th:style="'width:' + ${balance.usedPercent} + '%'"></span></div>
+        </div>
+
+        <div class="stat">
+            <div class="label">Kıdem</div>
+            <div class="value">
+                <span th:text="${balance.seniorityYears}">0</span><small> yıl</small>
+            </div>
+            <div class="foot" th:if="${profile != null and profile.startDate != null}"
+                 th:text="'Başlangıç: ' + ${#temporals.format(profile.startDate, 'dd.MM.yyyy')}"></div>
+            <div class="foot" th:unless="${profile != null and profile.startDate != null}">
+                İşe başlama tarihi girilmedi
+            </div>
+        </div>
+
+        <div class="stat">
+            <div class="label">Çalıştığı Yer</div>
+            <div class="value" style="font-size:19px"
+                 th:text="${profile != null and profile.companyName != null} ? ${profile.companyName} : '—'">—</div>
+            <div class="foot"
+                 th:text="${profile != null and profile.position != null} ? ${profile.position} : 'Pozisyon girilmedi'"></div>
+        </div>
+
+        <div class="stat">
+            <div class="label">Aylık Maaş</div>
+            <div class="value" style="font-size:22px"
+                 th:text="${profile != null and profile.salary != null}
+                          ? ${#numbers.formatDecimal(profile.salary, 1, 'POINT', 2, 'COMMA')} + ' ' + ${profile.currency}
+                          : '—'">—</div>
+            <div class="foot" th:text="${profile != null and profile.employmentType != null} ? ${profile.employmentType} : 'Brüt'"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <h2>Son İzin Talepleri</h2>
+            <a class="btn small" th:href="@{/leaves}">Tümünü gör</a>
+        </div>
+
+        <div class="table-wrap" th:if="${!recentLeaves.isEmpty()}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Tür</th>
+                    <th>Başlangıç</th>
+                    <th>Bitiş</th>
+                    <th>İş Günü</th>
+                    <th>Durum</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="leave : ${recentLeaves}">
+                    <td th:text="${leave.leaveType.label}">Tür</td>
+                    <td th:text="${#temporals.format(leave.startDate, 'dd.MM.yyyy')}">-</td>
+                    <td th:text="${#temporals.format(leave.endDate, 'dd.MM.yyyy')}">-</td>
+                    <td th:text="${leave.workDays}">0</td>
+                    <td>
+                        <span class="badge" th:classappend="${leave.status.cssClass}"
+                              th:text="${leave.status.label}">Durum</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty" th:if="${recentLeaves.isEmpty()}">
+            <div class="big">▦</div>
+            <div>Henüz izin talebiniz yok.</div>
+            <div style="margin-top:14px"><a class="btn small" th:href="@{/leaves}">İzin talebi oluştur</a></div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>

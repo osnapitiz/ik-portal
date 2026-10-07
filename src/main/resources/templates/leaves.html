@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: page(~{::content})}">
+<body>
+<th:block th:fragment="content">
+
+    <div class="page-head">
+        <div>
+            <h1>İzinlerim</h1>
+            <div class="desc">Yeni izin talebi oluşturun ve geçmiş taleplerinizi takip edin.</div>
+        </div>
+        <div class="stat" style="padding:12px 18px;margin:0">
+            <div class="label">Kalan Yıllık İzin</div>
+            <div class="value" style="font-size:22px">
+                <span th:text="${balance.remainingDays}">0</span><small th:text="' / ' + ${balance.entitledDays} + ' gün'"></small>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <h2>Yeni İzin Talebi</h2>
+            <span class="hint">İş günü sayısı hafta sonları hariç tutularak hesaplanır</span>
+        </div>
+        <div class="card-body">
+            <form method="post" th:action="@{/leaves}" th:object="${leaveForm}">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="leaveType">İzin Türü <span class="req">*</span></label>
+                        <select id="leaveType" th:field="*{leaveType}">
+                            <option value="">Seçiniz</option>
+                            <option th:each="t : ${leaveTypes}" th:value="${t}" th:text="${t.label}"></option>
+                        </select>
+                        <div class="field-error" th:if="${#fields.hasErrors('leaveType')}" th:errors="*{leaveType}"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="startDate">Başlangıç Tarihi <span class="req">*</span></label>
+                        <input type="date" id="startDate" th:field="*{startDate}">
+                        <div class="field-error" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="endDate">Bitiş Tarihi <span class="req">*</span></label>
+                        <input type="date" id="endDate" th:field="*{endDate}">
+                        <div class="field-error" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>
+                    </div>
+
+                    <div class="field wide">
+                        <label for="description">Açıklama</label>
+                        <textarea id="description" th:field="*{description}" maxlength="500"
+                                  placeholder="İzin gerekçeniz veya not (isteğe bağlı)"></textarea>
+                        <div class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn">Talep Oluştur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <h2>Talep Geçmişi</h2>
+            <span class="hint" th:text="${leaves.size()} + ' kayıt'"></span>
+        </div>
+
+        <div class="table-wrap" th:if="${!leaves.isEmpty()}">
+            <table>
+                <thead>
+                <tr>
+                    <th>Tür</th>
+                    <th>Başlangıç</th>
+                    <th>Bitiş</th>
+                    <th>İş Günü</th>
+                    <th>Açıklama</th>
+                    <th>Durum</th>
+                    <th>Talep Tarihi</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="leave : ${leaves}">
+                    <td th:text="${leave.leaveType.label}">Tür</td>
+                    <td th:text="${#temporals.format(leave.startDate, 'dd.MM.yyyy')}">-</td>
+                    <td th:text="${#temporals.format(leave.endDate, 'dd.MM.yyyy')}">-</td>
+                    <td>
+                        <span th:text="${leave.workDays}">0</span>
+                        <span style="color:var(--muted)" th:text="'(' + ${leave.totalDays} + ' takvim günü)'"></span>
+                    </td>
+                    <td th:text="${leave.description} ?: '—'"
+                        th:style="${leave.description == null} ? 'color:var(--muted)'">—</td>
+                    <td>
+                        <span class="badge" th:classappend="${leave.status.cssClass}"
+                              th:text="${leave.status.label}">Durum</span>
+                    </td>
+                    <td th:text="${#temporals.format(leave.createdAt, 'dd.MM.yyyy HH:mm')}">-</td>
+                    <td class="actions">
+                        <th:block th:if="${leave.status.name() == 'BEKLIYOR'}">
+                            <form method="post" th:action="@{'/leaves/' + ${leave.id} + '/decide'}">
+                                <input type="hidden" name="decision" value="ONAYLANDI">
+                                <button type="submit" class="btn small success">Onayla</button>
+                            </form>
+                            <form method="post" th:action="@{'/leaves/' + ${leave.id} + '/cancel'}">
+                                <button type="submit" class="btn small danger">İptal Et</button>
+                            </form>
+                        </th:block>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty" th:if="${leaves.isEmpty()}">
+            <div class="big">▦</div>
+            <div>Henüz izin talebiniz bulunmuyor. Yukarıdaki formdan ilk talebinizi oluşturabilirsiniz.</div>
+        </div>
+    </div>
+
+</th:block>
+</body>
+</html>
